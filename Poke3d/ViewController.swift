@@ -22,6 +22,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
+        //damos mas luz
+        sceneView.autoenablesDefaultLighting = true
      
     }
     
@@ -29,11 +31,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration cambiamos el inicio por el track de la imagen
-        let configuration = ARImageTrackingConfiguration()
+        let configuration = ARWorldTrackingConfiguration()
         
         if let imageToTrack = ARReferenceImage.referenceImages(inGroupNamed: "Pokemon Cards", bundle: Bundle.main) {
             
-            configuration.trackingImages = imageToTrack
+            configuration.detectionImages = imageToTrack
             
             configuration.maximumNumberOfTrackedImages = 2
             
@@ -63,6 +65,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         if let imageAnchor = anchor as? ARImageAnchor {
             
+            
+            
+            
             // le damos la dimencion, y el tamano sale del mismo que tiene la imagen por eso el .w y .h
             let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width, height: imageAnchor.referenceImage.physicalSize.height)
             
@@ -79,17 +84,43 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             
             node.addChildNode(planeNode)
             
-            // traemos el modelo 3D del poke
-            if let pokeScene = SCNScene(named: "art.scnassets/eevee.scn") {
+            // con referenceImage.name sacamos el nombre que reconoce la camara
+            if imageAnchor.referenceImage.name == "eevee" {
                 
-                if let pokeNode = pokeScene.rootNode.childNodes.first {
+                // traemos el modelo 3D del poke
+                if let pokeScene = SCNScene(named: "art.scnassets/eevee.scn") {
                     
-                    
-                    planeNode.addChildNode(pokeNode)
+                    if let pokeNode = pokeScene.rootNode.childNodes.first {
+                        
+                        pokeNode.eulerAngles.x = .pi/2
+                        
+                        planeNode.addChildNode(pokeNode)
+                        
+                    }
                     
                 }
                 
+                
+            } else if imageAnchor.referenceImage.name == "oddish" {
+                
+                // traemos el modelo 3D del poke
+                if let pokeScene = SCNScene(named: "art.scnassets/oddish.scn") {
+                    
+                    if let pokeNode = pokeScene.rootNode.childNodes.first {
+                        
+                        pokeNode.eulerAngles.x = .pi/2
+                        
+                        planeNode.addChildNode(pokeNode)
+                        
+                    }
+                    
+                }
+                
+                
             }
+            
+            
+         
             
             
             
