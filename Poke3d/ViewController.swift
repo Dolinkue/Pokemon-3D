@@ -35,7 +35,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             
             configuration.trackingImages = imageToTrack
             
-            configuration.maximumNumberOfTrackedImages = 1
+            configuration.maximumNumberOfTrackedImages = 2
             
         }
         
@@ -54,27 +54,49 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     // MARK: - ARSCNViewDelegate
     
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
+    
+    // el anchor es el objeto que se detecta, y el SCNNode es el objeto 3D que se da al detectar
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+        
         let node = SCNNode()
-     
+        
+        
+        if let imageAnchor = anchor as? ARImageAnchor {
+            
+            // le damos la dimencion, y el tamano sale del mismo que tiene la imagen por eso el .w y .h
+            let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width, height: imageAnchor.referenceImage.physicalSize.height)
+            
+            //hacemos transparente
+            plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
+            
+            
+            let planeNode = SCNNode(geometry: plane)
+            
+            // con esto rotamos la imagen generada en 3D a 90grados para que siga la carta
+            planeNode.eulerAngles.x = -.pi/2
+            
+            
+            
+            node.addChildNode(planeNode)
+            
+            // traemos el modelo 3D del poke
+            if let pokeScene = SCNScene(named: "art.scnassets/eevee.scn") {
+                
+                if let pokeNode = pokeScene.rootNode.childNodes.first {
+                    
+                    
+                    planeNode.addChildNode(pokeNode)
+                    
+                }
+                
+            }
+            
+            
+            
+        }
+        
+        
         return node
-    }
-*/
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
         
     }
 }
